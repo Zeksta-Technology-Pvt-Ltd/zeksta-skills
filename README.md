@@ -1,6 +1,6 @@
 # Agent Skills for Zeksta
 
-** Curated internal agents skills for 
+**Curated internal agents skills for**
 
 ---
 
@@ -12,7 +12,7 @@ Want to contribute? See our [Contributing Guide](CONTRIBUTING.md).
 
 ## What are agent skills?
 
-Agent skills are **reusable, documented workflows** that instruct an AI agent how to perform a task in a consistent way (inputs → steps → outputs), with clear **guardrails** and **verification**.
+**Agent skills** are **reusable, documented workflows** that instruct an AI agent how to perform a task in a consistent way (inputs → steps → outputs), with clear **guardrails** and **verification**.
 
 ## Why agent skills?
 
@@ -20,12 +20,15 @@ Agent skills are **reusable, documented workflows** that instruct an AI agent ho
 - **Speed**: repeatable workflows reduce time-to-PR and time-to-ship
 - **Safety**: guardrails prevent destructive or out-of-scope actions
 - **Quality**: verification steps make results easier to trust and reproduce
+- **Portable**: Works across Github Copilot in VS Code, JetBranis and other compatible agents.
+
+Learn more at [agentskills.io](https://agentskills.io/)
 
 ## Supported agents
 
 This repo is designed to work with tools that discover skills from `.agents/skills/`, including:
 
-- **Github Copilot**
+- **Github Copilot**: Available in chat and agent mode
 
 
 ## How skills work
@@ -52,9 +55,9 @@ Skills are stored under `.agents/skills/`.
 
 ## Install
 
-### Install globally (recommended for individuals)
+### Installing Skills Locally
 
-This installs to `~/.codex/skills/zeksta`:
+This installs to `~/.copilot/skills/zeksta`:
 
 ```bash
 ./setup --global
@@ -94,3 +97,21 @@ Generate a lightweight QA-notes template:
 ```bash
 ./.agents/skills/zeksta/qa-only/qa-only.sh --base origin/main --head HEAD --out qa-only-report.md
 ```
+
+## Learn More
+
+If you are interested in learning more about skills, checkout the following resources:
+
+Standard: 
+- [Agent Skills Standard](https://agentskills.io/)
+
+Reference Libraries: 
+- [Anthropic's Agent Skills Library](https://github.com/anthropics/skills)
+
+Agent-Specific Documentation: 
+- [VS Code Agent Skills Documentation](https://code.visualstudio.com/docs/copilot/customization/agent-skills)
+- [How to create custom skills](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills)
+
+Learning Resources:
+
+- [The Complete Guide to Building Skills for Claude](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf)
