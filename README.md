@@ -57,7 +57,7 @@ Skills are stored under `.agents/skills/`.
 
 ### Installing Skills Locally
 
-This installs to `~/.copilot/skills/zeksta`:
+This installs to `~/.codex/skills/zeksta`:
 
 ```bash
 ./setup --global
