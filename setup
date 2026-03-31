@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Zeksta Skills setup
+
+Installs the `zeksta` skill pack (SKILL.md files) for agent hosts that discover skills in:
+  - Repo-local: <repo>/.agents/skills/zeksta
+  - User-global: ~/.codex/skills/zeksta
+
+Usage:
+  ./setup [--global]
+  ./setup --repo <path-to-target-repo>
+  ./setup --global --force
+  ./setup --repo <path> --force
+
+Options:
+  --global        Install to ~/.codex/skills/zeksta (default)
+  --repo PATH     Vendor into PATH/.agents/skills/zeksta
+  --force         Overwrite existing install (otherwise errors if target exists)
+  -h, --help      Show help
+
+Examples:
+  ./setup
+  ./setup --repo ../my-app
+EOF
+}
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+SRC_SKILLS_DIR="$SCRIPT_DIR/.agents/skills/zeksta"
+
+if [[ ! -d "$SRC_SKILLS_DIR" ]]; then
+  echo "ERROR: Source skills not found at: $SRC_SKILLS_DIR" >&2
+  exit 1
+fi
+
+mode="global"
+target_repo=""
+force="0"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --global)
+      mode="global"
+      shift
+      ;;
+    --repo)
+      mode="repo"
+      target_repo="${2:-}"
+      if [[ -z "$target_repo" ]]; then
+        echo "ERROR: --repo requires a path" >&2
+        exit 1
+      fi
+      shift 2
+      ;;
+    --force)
+      force="1"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "ERROR: Unknown argument: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ "$mode" == "global" ]]; then
+  dest="$HOME/.codex/skills/zeksta"
+else
+  if [[ ! -d "$target_repo" ]]; then
+    echo "ERROR: Target repo not found: $target_repo" >&2
+    exit 1
+  fi
+  dest="$target_repo/.agents/skills/zeksta"
+fi
+
+if [[ -e "$dest" ]]; then
+  if [[ "$force" == "1" ]]; then
+    rm -rf -- "$dest"
+  else
+    echo "ERROR: Destination already exists: $dest" >&2
+    echo "Re-run with --force to overwrite." >&2
+    exit 1
+  fi
+fi
+
+mkdir -p -- "$(dirname -- "$dest")"
+
+# Copy only the skill pack directory (not the whole repo).
+cp -R -- "$SRC_SKILLS_DIR" "$dest"
+
+echo "Installed Zeksta skills to: $dest"
+echo "Available: /review, /qa, /qa-only"
+
