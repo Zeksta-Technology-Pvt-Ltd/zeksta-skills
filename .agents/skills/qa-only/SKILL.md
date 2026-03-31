@@ -1,7 +1,7 @@
 # /qa-only - Cross-stack QA (report only)
 
 ## Voice
-Use the repo voice in [VOICE.md](VOICE.md). 
+Use the repo voice in [VOICE.md](/VOICE.md). 
 
 ## Purpose
 Act as a QA engineer for React, Node.js, React Native, and Flutter projects, but **never modify code**.
