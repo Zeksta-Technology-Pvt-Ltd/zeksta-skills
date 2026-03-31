@@ -33,7 +33,7 @@ This repo is designed to work with tools that discover skills from `.agents/skil
 
 ## How skills work
 
-- **Skill definition**: each skill lives at `.agents/skills/zeksta/<skill-name>/SKILL.md`
+- **Skill definition**: each skill lives at `.agents/skills/<skill-name>/SKILL.md`
 - **Invocation**: run the skill by name (e.g. `/review`, `/qa`, `/qa-only`) in your agent host
 - **Outcome**: the skill produces a structured output (report/checklist/commands) and stops when done
 - **Optional scripts**: some skills include helper scripts next to them for repeatable reports
@@ -42,30 +42,37 @@ This repo is designed to work with tools that discover skills from `.agents/skil
 
 | Skill | Description | Files |
 |------|-------------|-------|
-| `/review` | Cross-stack code review for React, Node.js, React Native, and Flutter. Produces a structured set of findings and a merge recommendation. | [`.agents/skills/zeksta/review/SKILL.md`](.agents/skills/zeksta/review/SKILL.md) |
-| `/qa` | Cross-stack QA with a structured test matrix and automated checks guidance. Intended to find regressions before merge/deploy. | [`.agents/skills/zeksta/qa/SKILL.md`](.agents/skills/zeksta/qa/SKILL.md) |
-| `/qa-only` | QA report only (no code changes). Use when you want a pure defect report and recommended next steps. | [`.agents/skills/zeksta/qa-only/SKILL.md`](.agents/skills/zeksta/qa-only/SKILL.md) |
+| `/review` | Cross-stack code review for React, Node.js, React Native, and Flutter. Produces a structured set of findings and a merge recommendation. | [`.agents/skills/review/SKILL.md`](.agents/skills/review/SKILL.md) |
+| `/qa` | Cross-stack QA with a structured test matrix and automated checks guidance. Intended to find regressions before merge/deploy. | [`.agents/skills/qa/SKILL.md`](.agents/skills/qa/SKILL.md) |
+| `/qa-only` | QA report only (no code changes). Use when you want a pure defect report and recommended next steps. | [`.agents/skills/qa-only/SKILL.md`](.agents/skills/qa-only/SKILL.md) |
 
 ## Skills in this repo
 
 Skills are stored under `.agents/skills/`.
 
-- **Skill pack**: `.agents/skills/zeksta/`
-- **Add a new skill**: `.agents/skills/zeksta/<skill-name>/SKILL.md`
+- **Add a new skill**: `.agents/skills/<skill-name>/SKILL.md`
 
 ## Install
 
 ### Installing Skills Locally
 
-This installs to `~/.codex/skills/zeksta`:
+Codex discovers skills as **top-level folders** under `~/.codex/skills/<skill-name>/SKILL.md`.
+
+Default install (no prefix). Commands will be `/review`, `/qa`, `/qa-only`:
 
 ```bash
 ./setup --global
 ```
 
+Optional: namespaced install to avoid collisions. Commands will be `/zeksta-review`, `/zeksta-qa`, `/zeksta-qa-only`:
+
+```bash
+./setup --global --prefix zeksta-
+```
+
 ### Vendor into another repo (recommended for teams)
 
-This installs to `<repo>/.agents/skills/zeksta`:
+This installs to `<repo>/.agents/skills/`:
 
 ```bash
 ./setup --repo /path/to/your/repo
@@ -78,8 +85,8 @@ This installs to `<repo>/.agents/skills/zeksta`:
 Create a Markdown report from a git range (useful to attach to PRs):
 
 ```bash
-./.agents/skills/zeksta/review/review.sh --base origin/main --head HEAD --out review-report.md
-./.agents/skills/zeksta/review/review.sh --run
+./.agents/skills/review/review.sh --base origin/main --head HEAD --out review-report.md
+./.agents/skills/review/review.sh --run
 ```
 
 ### Run automated QA checks
@@ -87,7 +94,7 @@ Create a Markdown report from a git range (useful to attach to PRs):
 Run stack-aware lint/tests and write a QA report:
 
 ```bash
-./.agents/skills/zeksta/qa/qa.sh --base origin/main --head HEAD --out qa-report.md
+./.agents/skills/qa/qa.sh --base origin/main --head HEAD --out qa-report.md
 ```
 
 ### Prepare notes for `/qa-only`
@@ -95,7 +102,7 @@ Run stack-aware lint/tests and write a QA report:
 Generate a lightweight QA-notes template:
 
 ```bash
-./.agents/skills/zeksta/qa-only/qa-only.sh --base origin/main --head HEAD --out qa-only-report.md
+./.agents/skills/qa-only/qa-only.sh --base origin/main --head HEAD --out qa-only-report.md
 ```
 
 ## Learn More

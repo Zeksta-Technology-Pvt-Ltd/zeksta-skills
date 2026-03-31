@@ -1,4 +1,7 @@
-# /review — Cross-stack Code Review
+# /review - Cross-stack Code Review
+
+## Voice
+Use the repo voice in `VOICE.MD`.
 
 ## Purpose
 Act as a senior engineer reviewing a change set for React, Node.js, React Native, and Flutter projects.

@@ -3,25 +3,34 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-qa-only.sh — light QA helper that never modifies code
+qa.sh - run stack-aware QA checks and write a QA report
 
 Usage:
-  ./.agents/skills/zeksta/qa-only/qa-only.sh
-  ./.agents/skills/zeksta/qa-only/qa-only.sh --base origin/main --head HEAD
-  ./.agents/skills/zeksta/qa-only/qa-only.sh --base main --head feature-branch --out qa-only-report.md
+  ./.agents/skills/qa/qa.sh
+  ./.agents/skills/qa/qa.sh --base origin/main --head HEAD
+  ./.agents/skills/qa/qa.sh --base main --head feature-branch --out qa-report.md
 
 Options:
   --base REF     Base ref to diff from (default: origin/main, falls back to main, then master)
   --head REF     Head ref to diff to (default: HEAD)
-  --out PATH     Output markdown report path (default: ./qa-only-report.md)
+  --out PATH     Output markdown report path (default: ./qa-report.md)
   -h, --help     Show help
 
 What it does:
-  - Lists changed files from git diff BASE..HEAD
+  - Detects changed files from git diff BASE..HEAD
   - Detects stack(s): react, react-native, node, flutter
-  - Suggests relevant automated commands but does not run them
-  - Writes a Markdown QA-notes template (for use with the /qa-only skill)
+  - Runs common lint/test commands when available
+  - Writes a Markdown QA report you can attach to a PR
+
+Notes:
+  - This script never modifies code.
+  - It does not install dependencies; it only runs commands if the tool exists.
 EOF
+}
+
+require_cmd() {
+  local cmd="$1"
+  command -v "$cmd" >/dev/null 2>&1
 }
 
 pick_default_base() {
@@ -38,7 +47,7 @@ pick_default_base() {
 
 BASE="$(pick_default_base)"
 HEAD="HEAD"
-OUT="./qa-only-report.md"
+OUT="./qa-report.md"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -120,10 +129,39 @@ if [[ ${#stacks[@]} -eq 0 ]]; then
   stacks+=("unknown")
 fi
 
+run_and_capture() {
+  local title="$1"
+  shift
+  local cmd=("$@")
+
+  {
+    echo ""
+    echo "#### ${title}"
+    echo ""
+    echo '```bash'
+    printf '%q ' "${cmd[@]}"
+    echo
+    echo '```'
+    echo ""
+    echo "Output:"
+    echo ""
+    echo '```'
+  } >>"$OUT"
+
+  if "${cmd[@]}" >>"$OUT" 2>&1; then
+    echo "" >>"$OUT"
+  else
+    echo "" >>"$OUT"
+    echo "(command failed; see output above)" >>"$OUT"
+  fi
+
+  echo '```' >>"$OUT"
+}
+
 mkdir -p -- "$(dirname -- "$OUT")"
 
 cat >"$OUT" <<EOF
-# QA-only notes
+# QA report
 
 - Range: \`$BASE..$HEAD\`
 - Generated: \`$(date -u +"%Y-%m-%dT%H:%M:%SZ")\`
@@ -135,46 +173,46 @@ cat >"$OUT" <<EOF
 ${changed_files:-<none>}
 \`\`\`
 
-## Suggested automated commands (run manually)
-
+## Automated checks
 EOF
 
 if [[ "$has_package_json" == "1" ]]; then
-  cat >>"$OUT" <<'EOF'
-JS/TS project detected. Consider:
+  pkg_mgr="npm"
+  if require_cmd pnpm && [[ -f "pnpm-lock.yaml" ]]; then pkg_mgr="pnpm"; fi
+  if require_cmd yarn && ([[ -f "yarn.lock" ]] || [[ -f ".yarnrc.yml" ]]); then pkg_mgr="yarn"; fi
+  if require_cmd bun && [[ -f "bun.lock" ]]; then pkg_mgr="bun"; fi
 
-```bash
-npm run lint   # or yarn/pnpm/bun equivalent
-npm test
-```
-
-EOF
+  run_and_capture "JS/TS: lint (if configured)" "$pkg_mgr" run lint || true
+  run_and_capture "JS/TS: tests (if configured)" "$pkg_mgr" test || true
 fi
 
 if [[ "$has_pubspec" == "1" ]]; then
-  cat >>"$OUT" <<'EOF'
-Flutter project detected. Consider:
-
-```bash
-flutter analyze
-flutter test
-```
-
-EOF
+  if require_cmd flutter; then
+    run_and_capture "Flutter: analyze (if used)" flutter analyze || true
+    run_and_capture "Flutter: tests" flutter test || true
+  else
+    {
+      echo ""
+      echo "#### Flutter commands"
+      echo ""
+      echo "Flutter detected but \`flutter\` is not on PATH. Suggested:"
+      echo ""
+      echo '```bash'
+      echo "flutter analyze"
+      echo "flutter test"
+      echo '```'
+    } >>"$OUT"
+  fi
 fi
 
 {
-  echo "## Manual QA notes"
   echo ""
-  echo "- Scenario 1:"
-  echo "  - Steps:"
-  echo "  - Expected:"
-  echo "  - Actual:"
+  echo "## Manual QA checklist (fill in by hand)"
   echo ""
-  echo "- Scenario 2:"
-  echo "  - Steps:"
-  echo "  - Expected:"
-  echo "  - Actual:"
+  echo "- [ ] Happy paths for the feature under test"
+  echo "- [ ] Error states (network/server/validation)"
+  echo "- [ ] Edge cases and empty states"
+  echo "- [ ] Regressions in nearby flows"
 } >>"$OUT"
 
 echo "Wrote: $OUT"

@@ -14,17 +14,21 @@ Thanks for helping improve our internal agent skills. This repo is intended to b
 
 ## Types of contributions
 
+- **Voice and writing**
+  - All skills and docs must follow `VOICE.MD`.
+  - Be direct. Name files and commands. No filler.
+
 - **New skills**
-  - Add a new skill under `.agents/skills/zeksta/<skill-name>/SKILL.md`.
+  - Add a new skill under `.agents/skills/<skill-name>/SKILL.md`.
   - Prefer narrow, composable skills over “do everything” skills.
 - **Improve existing skills**
   - Clarify steps, inputs/outputs, guardrails, and verification criteria.
   - Add better examples and edge cases.
 - **Command scripts**
   - Put helper scripts next to the relevant skill:
-    - `.agents/skills/zeksta/review/review.sh`
-    - `.agents/skills/zeksta/qa/qa.sh`
-    - `.agents/skills/zeksta/qa-only/qa-only.sh`
+    - `.agents/skills/review/review.sh`
+    - `.agents/skills/qa/qa.sh`
+    - `.agents/skills/qa-only/qa-only.sh`
   - Scripts must be **read-only with respect to code** (no automatic edits).
 - **Docs**
   - Keep `README.MD` current (skills list, install steps, command paths).
@@ -54,7 +58,7 @@ Thanks for helping improve our internal agent skills. This repo is intended to b
 
 ## Conventions
 
-- **Skill paths**: `.agents/skills/zeksta/<skill>/SKILL.md`
+- **Skill paths**: `.agents/skills/<skill>/SKILL.md`
 - **Naming**:
   - Use kebab-case for skill folders (e.g. `qa-only`, `security-review`).
 - **Safety**:

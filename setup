@@ -5,30 +5,33 @@ usage() {
   cat <<'EOF'
 Zeksta Skills setup
 
-Installs the `zeksta` skill pack (SKILL.md files) for agent hosts that discover skills in:
-  - Repo-local: <repo>/.agents/skills/zeksta
-  - User-global: ~/.codex/skills/zeksta
+Installs the Zeksta skills (SKILL.md files) for agent hosts that discover skills in:
+  - Repo-local: <repo>/.agents/skills/<skill-name>
+  - User-global (Codex): ~/.codex/skills/<skill-name>
 
 Usage:
   ./setup [--global]
   ./setup --repo <path-to-target-repo>
   ./setup --global --force
   ./setup --repo <path> --force
+  ./setup --global --prefix zeksta-
 
 Options:
-  --global        Install to ~/.codex/skills/zeksta (default)
-  --repo PATH     Vendor into PATH/.agents/skills/zeksta
+  --global        Install to ~/.codex/skills/<skill-name> (default)
+  --repo PATH     Vendor into PATH/.agents/skills/
   --force         Overwrite existing install (otherwise errors if target exists)
+  --prefix STR    Prefix skill folder names for global install (default: empty)
   -h, --help      Show help
 
 Examples:
   ./setup
   ./setup --repo ../my-app
+  ./setup --global --prefix zeksta-
 EOF
 }
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-SRC_SKILLS_DIR="$SCRIPT_DIR/.agents/skills/zeksta"
+SRC_SKILLS_DIR="$SCRIPT_DIR/.agents/skills"
 
 if [[ ! -d "$SRC_SKILLS_DIR" ]]; then
   echo "ERROR: Source skills not found at: $SRC_SKILLS_DIR" >&2
@@ -38,6 +41,7 @@ fi
 mode="global"
 target_repo=""
 force="0"
+prefix=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -58,6 +62,10 @@ while [[ $# -gt 0 ]]; do
       force="1"
       shift
       ;;
+    --prefix)
+      prefix="${2:-}"
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -71,30 +79,73 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ "$mode" == "global" ]]; then
-  dest="$HOME/.codex/skills/zeksta"
+  dest="$HOME/.codex/skills"
 else
   if [[ ! -d "$target_repo" ]]; then
     echo "ERROR: Target repo not found: $target_repo" >&2
     exit 1
   fi
-  dest="$target_repo/.agents/skills/zeksta"
+  dest="$target_repo/.agents/skills"
 fi
 
-if [[ -e "$dest" ]]; then
-  if [[ "$force" == "1" ]]; then
-    rm -rf -- "$dest"
-  else
-    echo "ERROR: Destination already exists: $dest" >&2
-    echo "Re-run with --force to overwrite." >&2
-    exit 1
-  fi
+if [[ "$mode" == "global" ]]; then
+  mkdir -p -- "$dest"
+
+  # Codex discovers skills as top-level folders under ~/.codex/skills/<skill-name>/SKILL.md
+  # Install each skill as its own folder so it shows up in the slash command list.
+  for skill in review qa qa-only; do
+    src="$SRC_SKILLS_DIR/$skill"
+    if [[ ! -d "$src" ]]; then
+      echo "ERROR: Missing source skill directory: $src" >&2
+      exit 1
+    fi
+
+    name="${prefix}${skill}"
+    target="$dest/$name"
+
+    if [[ -e "$target" ]]; then
+      if [[ "$force" == "1" ]]; then
+        rm -rf -- "$target"
+      else
+        echo "ERROR: Destination already exists: $target" >&2
+        echo "Re-run with --force to overwrite." >&2
+        exit 1
+      fi
+    fi
+
+    mkdir -p -- "$target"
+    cp -R -- "$src/"* "$target/"
+    echo "Installed: $target"
+  done
+
+  echo "Done. Commands: /${prefix}review, /${prefix}qa, /${prefix}qa-only"
+else
+  mkdir -p -- "$dest"
+
+  for skill in review qa qa-only; do
+    src="$SRC_SKILLS_DIR/$skill"
+    if [[ ! -d "$src" ]]; then
+      echo "ERROR: Missing source skill directory: $src" >&2
+      exit 1
+    fi
+
+    target="$dest/$skill"
+    if [[ -e "$target" ]]; then
+      if [[ "$force" == "1" ]]; then
+        rm -rf -- "$target"
+      else
+        echo "ERROR: Destination already exists: $target" >&2
+        echo "Re-run with --force to overwrite." >&2
+        exit 1
+      fi
+    fi
+
+    mkdir -p -- "$target"
+    cp -R -- "$src/"* "$target/"
+    echo "Installed: $target"
+  done
+
+  echo "Installed Zeksta skills to: $dest"
+  echo "Skills: /review, /qa, /qa-only"
 fi
-
-mkdir -p -- "$(dirname -- "$dest")"
-
-# Copy only the skill pack directory (not the whole repo).
-cp -R -- "$SRC_SKILLS_DIR" "$dest"
-
-echo "Installed Zeksta skills to: $dest"
-echo "Available: /review, /qa, /qa-only"
 

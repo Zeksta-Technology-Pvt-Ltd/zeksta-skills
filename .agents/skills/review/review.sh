@@ -3,13 +3,13 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-review.sh — generate a review-ready report from a git range
+review.sh - generate a review-ready report from a git range
 
 Usage:
-  ./.agents/skills/zeksta/review/review.sh
-  ./.agents/skills/zeksta/review/review.sh --base origin/main --head HEAD
-  ./.agents/skills/zeksta/review/review.sh --base main --head feature-branch --out review-report.md
-  ./.agents/skills/zeksta/review/review.sh --run
+  ./.agents/skills/review/review.sh
+  ./.agents/skills/review/review.sh --base origin/main --head HEAD
+  ./.agents/skills/review/review.sh --base main --head feature-branch --out review-report.md
+  ./.agents/skills/review/review.sh --run
 
 Options:
   --base REF     Base ref to diff from (default: origin/main, falls back to main, then master)
