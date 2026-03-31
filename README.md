@@ -1,6 +1,6 @@
 # Agent Skills for Zeksta
 
-**Curated internal agents skills for**
+**Curated internal agents skills for Zeksta Developers**
 
 ---
 
