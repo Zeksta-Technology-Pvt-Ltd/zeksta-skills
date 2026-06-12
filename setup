@@ -8,16 +8,20 @@ Zeksta Skills setup
 Installs the Zeksta skills (SKILL.md files) for agent hosts that discover skills in:
   - Repo-local: <repo>/.agents/skills/<skill-name>
   - User-global (Codex): ~/.codex/skills/<skill-name>
+  - User-global (VS Code Copilot): ~/.copilot/skills/<skill-name>
 
 Usage:
   ./setup [--global]
+  ./setup --vscode
   ./setup --repo <path-to-target-repo>
   ./setup --global --force
+  ./setup --vscode --force
   ./setup --repo <path> --force
   ./setup --global --prefix zeksta-
 
 Options:
   --global        Install to ~/.codex/skills/<skill-name> (default)
+  --vscode        Install to ~/.copilot/skills/<skill-name>
   --repo PATH     Vendor into PATH/.agents/skills/
   --force         Overwrite existing install (otherwise errors if target exists)
   --prefix STR    Prefix skill folder names for global install (default: empty)
@@ -25,6 +29,7 @@ Options:
 
 Examples:
   ./setup
+  ./setup --vscode
   ./setup --repo ../my-app
   ./setup --global --prefix zeksta-
 EOF
@@ -47,6 +52,10 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --global)
       mode="global"
+      shift
+      ;;
+    --vscode)
+      mode="vscode"
       shift
       ;;
     --repo)
@@ -80,6 +89,8 @@ done
 
 if [[ "$mode" == "global" ]]; then
   dest="$HOME/.codex/skills"
+elif [[ "$mode" == "vscode" ]]; then
+  dest="$HOME/.copilot/skills"
 else
   if [[ ! -d "$target_repo" ]]; then
     echo "ERROR: Target repo not found: $target_repo" >&2
@@ -88,11 +99,12 @@ else
   dest="$target_repo/.agents/skills"
 fi
 
-if [[ "$mode" == "global" ]]; then
+if [[ "$mode" == "global" || "$mode" == "vscode" ]]; then
   mkdir -p -- "$dest"
 
-  # Codex discovers skills as top-level folders under ~/.codex/skills/<skill-name>/SKILL.md
-  # Install each skill as its own folder so it shows up in the slash command list.
+  # Codex and VS Code Copilot discover skills as top-level folders:
+  #   - Codex: ~/.codex/skills/<skill-name>/SKILL.md
+  #   - VS Code Copilot: ~/.copilot/skills/<skill-name>/SKILL.md
   for skill in review qa qa-only; do
     src="$SRC_SKILLS_DIR/$skill"
     if [[ ! -d "$src" ]]; then
@@ -118,7 +130,11 @@ if [[ "$mode" == "global" ]]; then
     echo "Installed: $target"
   done
 
-  echo "Done. Commands: /${prefix}review, /${prefix}qa, /${prefix}qa-only"
+  if [[ "$mode" == "global" ]]; then
+    echo "Done (Codex). Commands: /${prefix}review, /${prefix}qa, /${prefix}qa-only"
+  else
+    echo "Done (VS Code Copilot). Commands: /${prefix}review, /${prefix}qa, /${prefix}qa-only"
+  fi
 else
   mkdir -p -- "$dest"
 

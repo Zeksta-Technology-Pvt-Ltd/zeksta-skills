@@ -28,7 +28,8 @@ Learn more at [agentskills.io](https://agentskills.io/)
 
 This repo is designed to work with tools that discover skills from `.agents/skills/`, including:
 
-- **Github Copilot**: Available in chat and agent mode
+- **GitHub Copilot in VS Code**: supports Agent Skills when `SKILL.md` includes YAML frontmatter and your skills directory is discovered. See [VS Code Agent Skills Documentation](https://code.visualstudio.com/docs/copilot/customization/agent-skills)
+- **Codex**: supports skills installed under `~/.codex/skills/<skill-name>/SKILL.md`
 
 
 ## How skills work
@@ -69,6 +70,30 @@ Optional: namespaced install to avoid collisions. Commands will be `/zeksta-revi
 ```bash
 ./setup --global --prefix zeksta-
 ```
+
+### Installing for VS Code Copilot (personal skills)
+
+VS Code Copilot can load personal skills from `~/.copilot/skills/<skill-name>/SKILL.md`. Reference: [Use Agent Skills in VS Code](https://code.visualstudio.com/docs/copilot/customization/agent-skills)
+
+```bash
+./setup --vscode --force
+```
+
+### Make slash commands show up in GitHub Copilot (VS Code)
+
+
+1. **Reload VS Code** after installing skills.
+2. Open Copilot Chat and type `/`.
+3. If they do not show up, run **Chat: Open Chat Customizations** and check the **Skills** tab.
+4. If your repo is a monorepo, enable parent discovery:
+   - Setting: `chat.useCustomizationsInParentRepositories`
+5. If you keep skills in a non-standard place, add a custom location:
+   - Setting: `chat.skillsLocations`
+   - Add: `.agents/skills`
+
+If Copilot still refuses to load a skill, check these invariants from the VS Code doc:
+- `SKILL.md` must have YAML frontmatter with `name` and `description`
+- `name` must match the folder name (example: folder `qa-only/` must have `name: qa-only`)
 
 ### Vendor into another repo (recommended for teams)
 

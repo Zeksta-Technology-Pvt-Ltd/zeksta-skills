@@ -1,7 +1,13 @@
+---
+name: qa-only
+description: QA report only for React, Node.js, React Native, and Flutter. Use this when you want defects and next steps, with zero code changes.
+argument-hint: "[scope] [environment]"
+---
+
 # /qa-only - Cross-stack QA (report only)
 
 ## Voice
-Use this voice [VOICE.md](/VOICE.md). 
+Use the voice in [`VOICE.MD`](./VOICE.MD). If you drift, re-read it and rewrite.
 
 ## Purpose
 Act as a QA engineer for React, Node.js, React Native, and Flutter projects, but **never modify code**.

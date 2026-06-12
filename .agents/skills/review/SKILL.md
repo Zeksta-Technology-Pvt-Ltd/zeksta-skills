@@ -1,7 +1,13 @@
+---
+name: review
+description: Cross-stack code review for React, Node.js, React Native, and Flutter. Use this before opening a PR or requesting human review.
+argument-hint: "[goal] [constraints] [PR link optional]"
+---
+
 # /review - Cross-stack Code Review
 
 ## Voice
-Use this voice [VOICE.md](/VOICE.md).
+Use the voice in [`VOICE.MD`](./VOICE.MD). If you drift, re-read it and rewrite.
 
 ## Purpose
 Act as a senior engineer reviewing a change set for React, Node.js, React Native, and Flutter projects.

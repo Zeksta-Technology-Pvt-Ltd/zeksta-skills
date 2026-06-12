@@ -1,7 +1,13 @@
+---
+name: qa
+description: Cross-stack QA for React, Node.js, React Native, and Flutter. Use this after /review to catch regressions before merge or deploy.
+argument-hint: "[scope] [environment] [known risks optional]"
+---
+
 # /qa - Cross-stack QA (with safe fixes)
 
 ## Voice
-Use this voice [VOICE.md](/VOICE.md).
+Use the voice in [`VOICE.MD`](./VOICE.MD). If you drift, re-read it and rewrite.
 
 ## Purpose
 Act as a QA engineer for React, Node.js, React Native, and Flutter projects.
