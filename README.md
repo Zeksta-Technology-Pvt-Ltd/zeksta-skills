@@ -59,16 +59,10 @@ Skills are stored under `.agents/skills/`.
 
 Codex discovers skills as **top-level folders** under `~/.codex/skills/<skill-name>/SKILL.md`.
 
-Default install (no prefix). Commands will be `/review`, `/qa`, `/qa-only`:
+Commands will be `/zeksta-review`, `/zeksta-qa`, `/zeksta-qa-only`:
 
 ```bash
-./setup --global
-```
-
-Optional: namespaced install to avoid collisions. Commands will be `/zeksta-review`, `/zeksta-qa`, `/zeksta-qa-only`:
-
-```bash
-./setup --global --prefix zeksta-
+./setup.sh --global
 ```
 
 ### Installing for VS Code Copilot (personal skills)
@@ -76,7 +70,7 @@ Optional: namespaced install to avoid collisions. Commands will be `/zeksta-revi
 VS Code Copilot can load personal skills from `~/.copilot/skills/<skill-name>/SKILL.md`. Reference: [Use Agent Skills in VS Code](https://code.visualstudio.com/docs/copilot/customization/agent-skills)
 
 ```bash
-./setup --vscode --force
+./setup.sh --vscode --force
 ```
 
 ### Make slash commands show up in GitHub Copilot (VS Code)
@@ -100,7 +94,7 @@ If Copilot still refuses to load a skill, check these invariants from the VS Cod
 This installs to `<repo>/.agents/skills/`:
 
 ```bash
-./setup --repo /path/to/your/repo
+./setup.sh --repo /path/to/your/repo
 ```
 
 ## Commands (in this skill pack)
