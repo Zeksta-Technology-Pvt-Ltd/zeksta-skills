@@ -1,10 +1,10 @@
 ---
-name: qa-only
+name: zeksta-qa-only
 description: QA report only for React, Node.js, React Native, and Flutter. Use this when you want defects and next steps, with zero code changes.
 argument-hint: "[scope] [environment]"
 ---
 
-# /qa-only - Cross-stack QA (report only)
+# /zeksta-qa-only - Cross-stack QA (report only)
 
 ## Voice
 Use the voice in [`VOICE.MD`](./VOICE.MD). If you drift, re-read it and rewrite.
